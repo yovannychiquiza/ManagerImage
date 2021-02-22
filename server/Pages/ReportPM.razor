@@ -1,0 +1,34 @@
+﻿@page "/reportPM"
+@layout MainLayout
+@attribute [Authorize]
+@inject ELImageService eLImageService
+@inject IJSRuntime JS
+
+<h3>Reports PM</h3>
+
+
+<div>
+    <button @onclick="CallService">Report Maintenance PM Completion </button>
+</div>
+
+
+@Result
+
+
+@code {
+
+    [Parameter]
+    public string Result { get; set; }
+
+    private string Pallet { get; set; }
+
+    public void CallService()
+    {
+
+        var package = eLImageService.ReportWeeklyPMCompletion();
+        string name = "Maintenance PM Completion " + DateTime.Now.Year + ".xlsx";
+        JS.SaveAsNew(name, package.GetAsByteArray());
+
+    }
+
+}

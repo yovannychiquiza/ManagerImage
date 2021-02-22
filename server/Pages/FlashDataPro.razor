@@ -1,0 +1,88 @@
+﻿
+@page "/flashdataPro"
+@layout MainLayout
+@using Radzen
+@using Radzen.Blazor
+@inject ELImageService eLImageService
+@inject IJSRuntime JS
+
+<h2>Flash Data Production</h2>
+
+<EditForm Model="@flashDataDto">
+    <div class="row" style="padding:10px">
+        <div class="col-md-3">
+            <div><h6>Date time from</h6></div>
+        </div>
+        <div class="col-md-3">
+            <div><h6>Date time to</h6></div>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-md-3">
+            <RadzenDatePicker TValue="DateTime" ShowTime="true" @bind-Value="@((flashDataDto.DateFrom))" HourFormat="12" DateFormat="MM/dd/yyyy h:mm tt" />
+        </div>
+        <div class="col-md-3">
+            <RadzenDatePicker TValue="DateTime" ShowTime="true" @bind-Value="@((flashDataDto.DateTo))" HourFormat="12" DateFormat="MM/dd/yyyy h:mm tt" />
+        </div>
+        <div class="col-md-1">
+            <button @onclick="CallService" class="btn btn-outline-primary">Search</button>
+        </div>
+        <div class="col-md-3">
+            @if (listData.Count() > 0 || listDataAts.Count() > 0)
+            {
+                <div class="col-md-1">
+                    <button @onclick="CleanList" class="btn btn-outline-danger">Clean</button>
+                </div>
+            }
+        </div>
+    </div>
+</EditForm>
+
+@Result
+<div class="@Load"></div>
+
+<QuickSun listData="@listData"></QuickSun>
+<PasanData listDataAts="@listDataAts"> </PasanData>
+
+
+@code {
+
+    public string TotalDataAts { get; set; }
+    public string TotalData { get; set; }
+    private List<ModuleData> listData = new List<ModuleData>();
+    private List<ModuleDataAts> listDataAts = new List<ModuleDataAts>();
+    private FlashDataDto flashDataDto { get; set; } = new FlashDataDto() { DateFrom = DateTime.Now, DateTo = DateTime.Now };
+    public string Result { get; set; }
+    public string Load { get; set; }
+
+    private async Task CallService()
+    {
+        Result = "Processing please wait....";
+        Load = "loader";
+        listData = await Task.Run(() => eLImageService.getQuickSunDate(flashDataDto, listData));
+
+        listDataAts = await Task.Run(() => eLImageService.getPasanDataDate(flashDataDto, listDataAts));
+
+        if (listData.Count == 0 && listDataAts.Count == 0)
+        {
+            Result = " No results ";
+        }
+        else
+        {
+            Result = "";
+        }
+
+        Load = "";
+        this.StateHasChanged();
+    }
+
+    private void CleanList()
+    {
+        listData = new List<ModuleData>();
+        listDataAts = new List<ModuleDataAts>();
+    }
+
+
+}

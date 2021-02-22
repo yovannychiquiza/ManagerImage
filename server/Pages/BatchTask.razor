@@ -1,0 +1,42 @@
+﻿
+@page "/batch-task"
+@layout MainLayout
+@inherits ManagerImage.Pages.BatchTaskComponent
+@attribute [Authorize]
+@inject IToastService toastService
+
+@using Radzen
+@using Radzen.Blazor
+@using ManagerImage.Models.ManagerImage
+<RadzenContent Container="main">
+    <ChildContent>
+        <RadzenHeading Size="H1" Text="Admin Panel">
+        </RadzenHeading>
+        <div class="row">
+            <div class="col-md-12">
+                <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Add" Click="@Button0Click">
+                </RadzenButton>
+                <RadzenGrid @ref="grid0" AllowFiltering="true" AllowPaging="false" AllowSorting="true" Data="@(getBatchTasksResult)" TItem="ManagerImage.Models.ManagerImage.BatchTask" RowSelect="@Grid0RowSelect">
+                    <Columns>
+                        <RadzenGridColumn TItem="ManagerImage.Models.ManagerImage.BatchTask" Context="managerImageModelsManagerImageBatchTask" Property="Description" Title="Description">
+                        </RadzenGridColumn>
+                        <RadzenGridColumn TItem="ManagerImage.Models.ManagerImage.BatchTask" Context="managerImageModelsManagerImageBatchTask" Property="Parameters" Title="Parameters">
+                        </RadzenGridColumn>
+                        <RadzenGridColumn TItem="ManagerImage.Models.ManagerImage.BatchTask" Context="managerImageModelsManagerImageBatchTask" Property="IntervalMinutes" Title="Interval Minutes">
+                        </RadzenGridColumn>
+                        <RadzenGridColumn TItem="ManagerImage.Models.ManagerImage.BatchTask" Context="managerImageModelsManagerImageBatchTask" Property="IsActive" Title="Active">
+                        </RadzenGridColumn>
+                    </Columns>
+                </RadzenGrid>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" style="margin-top:20px">
+                <RadzenButton Icon="glyphicon glyphicon-ok" style="margin-bottom: 10px" Text="Fix unsorted images" Click="@ProcessUnsortedImages">
+                </RadzenButton>
+                @Result
+                <div class="@Loading"></div>
+            </div>
+        </div>
+    </ChildContent>
+</RadzenContent>

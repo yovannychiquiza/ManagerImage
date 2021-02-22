@@ -1,0 +1,119 @@
+﻿@inject IJSRuntime JS
+
+@if (listDataAts.Count() > 0)
+{
+
+    <div class="row" style="padding:10px">
+        <div class="col-md-2">
+            <button @onclick="ExportCSVPasanData" class="btn btn-outline-success">Export to CSV</button>
+        </div>
+    </div>
+    <div class="row" style="padding :10px">
+        <div class="col-md-1">
+            <div>Total: @listDataAts.Count</div>
+        </div>
+    </div>
+
+    <div style="padding:20px; width:50%">
+
+        <h2>Pasan Data</h2>
+        <table class="table">
+
+            <tr>
+                <th>SN</th>
+                <th>TestTime</th>
+                <th>Imax</th>
+                <th>Isc</th>
+                <th>Pmax</th>
+                <th>Rs</th>
+                <th>Rsh</th>
+                <th>Stemp</th>
+                <th>Psun</th>
+                <th>Ff</th>
+                <th>Vmax</th>
+                <th>Voc</th>
+                <th>ModuleGrade</th>
+                <th>Nest1TestPass</th>
+                <th>Nest1TestFail</th>
+                <th>PackLocation</th>
+                <th>PartInNest1</th>
+                <th>PartType</th>
+                <th>PrintDone</th>
+                <th>PrintManual</th>
+                <th>PrintReject</th>
+                <th>SafetyZoneOk</th>
+                <th>Reconciled</th>
+                <th>Rowid</th>
+                <th>Hpv</th>
+                <th>Hpa</th>
+                <th>Irr</th>
+            </tr>
+
+
+            <tbody>
+                @foreach (var item in listDataAts)
+                {
+
+                    <tr>
+                        <td>@item.SerialNumberNest1</td>
+                        <td>@item.TestTime</td>
+                        <td>@item.Imax</td>
+                        <td>@item.Isc</td>
+                        <td>@item.Pmax</td>
+                        <td>@item.Rs</td>
+                        <td>@item.Rsh</td>
+                        <td>@item.Stemp</td>
+                        <td>@item.Psun</td>
+                        <td>@item.Ff</td>
+                        <td>@item.Vmax</td>
+                        <td>@item.Voc</td>
+                        <td>@item.ModuleGrade</td>
+                        <td>@item.Nest1TestPass</td>
+                        <td>@item.Nest1TestFail</td>
+                        <td>@item.PackLocation</td>
+                        <td>@item.PartInNest1</td>
+                        <td>@item.PartType</td>
+                        <td>@item.PrintDone</td>
+                        <td>@item.PrintManual</td>
+                        <td>@item.PrintReject</td>
+                        <td>@item.SafetyZoneOk</td>
+                        <td>@item.Reconciled</td>
+                        <td>@item.Rowid</td>
+                        <td>@item.Hpv</td>
+                        <td>@item.Hpa</td>
+                        <td>@item.Irr</td>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+
+    </div>
+}
+
+
+@code {
+
+    [Parameter]
+    public List<ModuleDataAts> listDataAts { get; set; }
+
+    private void ExportCSVPasanData()
+    {
+
+        var serialArray = listDataAts.ToArray();
+
+        using (var memoryStream = new MemoryStream())
+        {
+            using (var writer = new StreamWriter(memoryStream))
+            {
+                using (var csv = new CsvWriter(writer, System.Globalization.CultureInfo.CurrentCulture))
+                {
+                    csv.WriteRecords(serialArray);
+                }
+                var arr = memoryStream.ToArray();
+                JS.SaveAsNew("serialsPasanData.csv", arr);
+            }
+        }
+    }
+
+}

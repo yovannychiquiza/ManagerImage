@@ -1,0 +1,145 @@
+﻿@page "/serialMissing"
+
+
+@layout MainLayout
+
+@inject ELImageService eLImageService
+@inject HttpClient Http
+
+@inject IJSRuntime JS
+
+<h2>Serial Missing</h2>
+
+<div style="padding:30px">
+    <h4>Pallet</h4>
+    <input @bind="@Pallet" @onkeyup="eventKey" style="width:600px"/>
+
+    <button @onclick="CallService">Find</button>
+
+</div>
+
+
+@Result
+<div class="@Load"></div>
+
+<div style="padding:20px; width:50%">
+    @if (serialMissing.Count() > 0)
+    {
+        <button @onclick="ExportCSV">Export CSV</button>
+        <button @onclick="ExportExcel">Export Excel</button>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Pallet</th>
+                    <th>Serial</th>
+                    <th>Scanned Date</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in serialMissing)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.PalletNo</td>
+                        <td>@item.Sno</td>
+                        <td>@item.DateModified.GetValueOrDefault()</td>
+                        <td>@item.Type</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    }
+
+
+</div>
+
+@code {
+
+
+        private void eventKey(KeyboardEventArgs eventArgs)
+        {
+            if (eventArgs.Key == "Enter")        // fire on enter
+            {
+                CallService();
+            }
+        }
+
+    private List<LogDto> serialMissing = new List<LogDto>();
+
+    private string Pallet { get; set; }
+
+    [Parameter]
+    public string Result { get; set; }
+    public string Load { get; set; }
+
+    private async Task CallService()
+    {
+        Result = "Processing please wait....";
+        Load = "loader";
+        serialMissing = await Task.Run(()=> eLImageService.GetMissingPallets(Pallet, serialMissing)); 
+
+        if (serialMissing.Count == 0)
+        {
+            Result = Pallet + " is Wrong pallet";
+        }
+        else
+        {
+            Result = "Total: " + serialMissing.Count;
+        }
+        Load = "";
+        this.StateHasChanged();
+    }
+
+    private void ExportCSV()
+    {
+        if (serialMissing.Count == 0)
+        {
+            Result = "No Information to export";
+        }
+        else
+        {
+            var serialArray = serialMissing.ToArray();
+
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var writer = new StreamWriter(memoryStream))
+                {
+                    using (var csv = new CsvWriter(writer, System.Globalization.CultureInfo.CurrentCulture))
+                    {
+                        csv.WriteRecords(serialArray);
+                    }
+                    var arr = memoryStream.ToArray();
+                    JS.SaveAsNew("serialsMissing.csv", arr);
+                }
+            }
+        }
+
+    }
+
+
+    public void ExportExcel()
+    {
+        if (serialMissing.Count == 0)
+        {
+            Result = "No Information to export";
+        }
+        else
+        {
+            using (var package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("Serials");
+
+                var tablebody = worksheet.Cells["A1:A1"].LoadFromCollection(
+                    from f in serialMissing
+                    select new {f.Id, f.PalletNo, f.Sno, f.DateModified, f.Type }, true);
+
+                JS.SaveAsNew("serialsMissing.xlsx", package.GetAsByteArray());
+            }
+        }
+    }
+
+}

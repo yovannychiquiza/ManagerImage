@@ -1,0 +1,26 @@
+{
+  "dataSources": [
+    "ManagerImage"
+  ],
+  "generator": "@radzen/blazor-server",
+  "https": false,
+  "layouts": [
+    "Login",
+    "Main"
+  ],
+  "logo": "",
+  "name": "ManagerImage",
+  "navigation": [
+    "Batch Task"
+  ],
+  "pages": [
+    "Batch Task",
+    "Add Batch Task",
+    "Edit Batch Task"
+  ],
+  "serverLang": "cs",
+  "serverProject": true,
+  "serverVersion": "3",
+  "startPage": "Batch Task",
+  "theme": "default"
+}

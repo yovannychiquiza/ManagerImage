@@ -1,0 +1,62 @@
+﻿@page "/"
+@page "/flashdata"
+@layout MainLayout
+
+@inject ELImageService eLImageService
+@inject IJSRuntime JS
+
+<h2>Flash Data</h2>
+
+<div style="padding:30px">
+    <h4>Serial Number</h4>
+    <input @bind="@Pallet" @onkeyup="eventKey" style="width:600px" />
+    <button @onclick="CallService">Find</button>
+</div>
+
+
+@Result
+<div class="@Load"></div>
+
+<QuickSun listData="@listData"></QuickSun>
+<PasanData listDataAts="@listDataAts"> </PasanData>
+
+@code {
+
+    private void eventKey(KeyboardEventArgs eventArgs)
+    {
+        if (eventArgs.Key == "Enter")        // fire on enter
+        {
+            CallService();
+        }
+    }
+
+
+    private List<ModuleData> listData = new List<ModuleData>();
+    private List<ModuleDataAts> listDataAts = new List<ModuleDataAts>();
+    private string Pallet { get; set; }
+
+    [Parameter]
+    public string Result { get; set; }
+    public string Load { get; set; }
+
+    private async Task CallService()
+    {
+        Result = "Processing please wait....";
+        Load = "loader";
+        listDataAts = await Task.Run(() => eLImageService.getPasanData(Pallet, listDataAts));
+
+        listData = await Task.Run(() => eLImageService.getQuickSun(Pallet, listData));
+
+        if (listData.Count == 0 && listDataAts.Count == 0)
+        {
+            Result = Pallet + " is Wrong Serial Number";
+        }
+        else
+        {
+            Result = "";
+        }
+        Load = "";
+        this.StateHasChanged();
+    }
+
+}

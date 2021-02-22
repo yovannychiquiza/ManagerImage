@@ -1,0 +1,86 @@
+﻿@inherits ManagerImage.Layouts.MainLayoutComponent
+@using Blazored.Toast.Configuration
+@using Radzen
+@using Radzen.Blazor
+@using ManagerImage.Models.ManagerImage
+<RadzenDialog />
+<RadzenNotification />
+<BlazoredToasts Position="ToastPosition.BottomRight"
+                Timeout="10"
+                SuccessClass="success-toast-override"
+                SuccessIconClass="fa fa-thumbs-up"
+                ErrorIconClass="fa fa-bug" />
+<RadzenHeader>
+    <ChildContent>
+        <div class="row justify-content-start align-items-center">
+            <div class="col-md-6 d-flex align-items-center">
+                <RadzenSidebarToggle Click="@SidebarToggle0Click">
+                </RadzenSidebarToggle>
+                <RadzenLabel Text="Manager Image">
+                </RadzenLabel>
+            </div>
+            <div class="col-md-6 text-lg-right">
+                <div class="top-row px-4 auth">
+                    <AuthorizeView>
+                        <Authorized>
+                            <a href="">Hello, @context.User.Identity.Name </a>|
+                            <a href="./account/signout">signout </a>|
+                        </Authorized>
+                        <NotAuthorized>
+                            <a href="account/signin">Log in</a>
+                        </NotAuthorized>
+                    </AuthorizeView>
+
+                    <AuthorizeView Policy="RequireAdmin">
+                        <Authorized>
+                            <a href="account/register">Register </a>
+                        </Authorized>
+                    </AuthorizeView>
+
+                </div>
+            </div>
+        </div>
+    </ChildContent>
+</RadzenHeader>
+<RadzenBody @ref="body0">
+    <ChildContent>
+        <RadzenContentContainer Name="main">
+            @Body
+        </RadzenContentContainer>
+    </ChildContent>
+</RadzenBody>
+<RadzenSidebar @ref="sidebar0">
+    <ChildContent>
+        <RadzenPanelMenu style="height: 100%">
+            <ChildContent>
+
+                <AuthorizeView Policy="RequireAdmin">
+                    <Authorized>
+                        <RadzenPanelMenuItem Text="Admin Panel" Path="batch-task">
+                        </RadzenPanelMenuItem>
+                    </Authorized>
+                </AuthorizeView>
+
+                <RadzenPanelMenuItem Text="Sort" Path="sort">
+                </RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="Unsort" Path="unsort">
+                </RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="Serial Missing" Path="SerialMissing">
+                </RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="Flash Data" Path="flashdata">
+                </RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="Flash Data Production" Path="flashdataPro">
+                </RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="Search AWS" Path="searchAWS">
+                </RadzenPanelMenuItem>
+                <AuthorizeView Policy="RequireReport">
+                    <Authorized>
+                        <RadzenPanelMenuItem Text="Reports PM" Path="reportPM">
+                        </RadzenPanelMenuItem>
+                    </Authorized>
+                </AuthorizeView>
+            </ChildContent>
+        </RadzenPanelMenu>
+    </ChildContent>
+</RadzenSidebar>
+

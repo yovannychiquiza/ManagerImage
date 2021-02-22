@@ -1,0 +1,172 @@
+﻿@inject IJSRuntime JS
+
+@if (listData.Count() > 0)
+{
+
+    <div class="row" style="padding:10px">
+        <div class="col-md-2">
+            <button @onclick="ExportCSVQuickSun" class="btn btn-outline-success">Export to CSV</button>
+        </div>
+    </div>
+    <div class="row" style="padding :10px">
+        <div class="col-md-1">
+            <div>Total: @listData.Count</div>
+        </div>
+    </div>
+
+    <div style="padding:20px; width:50%">
+
+        <h2>Quick Sun</h2>
+        <table class="table">
+
+
+            <tr>
+                <th>N</th>
+                <th>Sn</th>
+                <th>CalModule</th>
+                <th>CalibrationTime</th>
+                <th>CalFactor</th>
+                <th>Voc</th>
+                <th>Isc</th>
+                <th>Pmp</th>
+                <th>Vmp</th>
+                <th>Imp</th>
+                <th>Ff</th>
+                <th>Tamb</th>
+                <th>Tref</th>
+                <th>Classification</th>
+                <th>Time</th>
+                <th>LotName</th>
+                <th>ModuleNumber</th>
+                <th>Manufacturer</th>
+                <th>Product</th>
+                <th>Irradiance</th>
+                <th>Vload</th>
+                <th>IatVload</th>
+                <th>PowerAtVload</th>
+                <th>CellEff</th>
+                <th>ModuleEff</th>
+                <th>SlopeAtVoc</th>
+                <th>SlopeAtIsc</th>
+                <th>Operator</th>
+                <th>Notes</th>
+                <th>LotNotes</th>
+                <th>Idiff</th>
+                <th>Idiff</th>
+                <th>Irec</th>
+                <th>Rshunt</th>
+                <th>Rser</th>
+                <th>Isun</th>
+                <th>TempCorrAlpha</th>
+                <th>TempCorrBeta</th>
+                <th>TempCorrCurve</th>
+                <th>TempCorrCurve</th>
+                <th>TempCorrSeriesR</th>
+                <th>ModuleLength</th>
+                <th>ModuleWidth</th>
+                <th>CellArea</th>
+                <th>CellsParallel</th>
+                <th>CellsSerial</th>
+                <th>ProductVoc</th>
+                <th>ProductIsc</th>
+                <th>ProductFf</th>
+                <th>ProductPmax</th>
+                <th>ProductPpass</th>
+            </tr>
+
+
+
+            <tbody>
+                @foreach (var item in listData)
+                {
+
+                    <tr>
+                        <td>@item.N</td>
+                        <td>@item.Sn</td>
+                        <td>@item.CalModule</td>
+                        <td>@item.CalibrationTime</td>
+                        <td>@item.CalFactor</td>
+                        <td>@item.Voc</td>
+                        <td>@item.Isc</td>
+                        <td>@item.Pmp</td>
+                        <td>@item.Vmp</td>
+                        <td>@item.Imp</td>
+                        <td>@item.Ff</td>
+                        <td>@item.Tamb</td>
+                        <td>@item.Tref</td>
+                        <td>@item.Classification</td>
+                        <td>@item.Time</td>
+                        <td>@item.LotName</td>
+                        <td>@item.ModuleNumber</td>
+                        <td>@item.Manufacturer</td>
+                        <td>@item.Product</td>
+                        <td>@item.Irradiance</td>
+                        <td>@item.Vload</td>
+                        <td>@item.IatVload</td>
+                        <td>@item.PowerAtVload</td>
+                        <td>@item.CellEff</td>
+                        <td>@item.ModuleEff</td>
+                        <td>@item.SlopeAtVoc</td>
+                        <td>@item.SlopeAtIsc</td>
+                        <td>@item.Operator</td>
+                        <td>@item.Notes</td>
+                        <td>@item.LotNotes</td>
+                        <td>@item.Idiff</td>
+                        <td>@item.Idiff</td>
+                        <td>@item.Irec</td>
+                        <td>@item.Rshunt</td>
+                        <td>@item.Rser</td>
+                        <td>@item.Isun</td>
+                        <td>@item.TempCorrAlpha</td>
+                        <td>@item.TempCorrBeta</td>
+                        <td>@item.TempCorrCurve</td>
+                        <td>@item.TempCorrCurve</td>
+                        <td>@item.TempCorrSeriesR</td>
+                        <td>@item.ModuleLength</td>
+                        <td>@item.ModuleWidth</td>
+                        <td>@item.CellArea</td>
+                        <td>@item.CellsParallel</td>
+                        <td>@item.CellsSerial</td>
+                        <td>@item.ProductVoc</td>
+                        <td>@item.ProductIsc</td>
+                        <td>@item.ProductFf</td>
+                        <td>@item.ProductPmax</td>
+                        <td>@item.ProductPpass</td>
+                    </tr>
+
+
+                }
+            </tbody>
+        </table>
+
+    </div>
+
+}
+
+
+@code {
+
+    [Parameter]
+    public List<ModuleData> listData { get; set; }
+
+    private void ExportCSVQuickSun()
+    {
+
+        var serialArray = listData.ToArray();
+
+        using (var memoryStream = new MemoryStream())
+        {
+            using (var writer = new StreamWriter(memoryStream))
+            {
+                using (var csv = new CsvWriter(writer, System.Globalization.CultureInfo.CurrentCulture))
+                {
+                    csv.WriteRecords(serialArray);
+                }
+                var arr = memoryStream.ToArray();
+                JS.SaveAsNew("serialsQuickSun.csv", arr);
+            }
+        }
+
+    }
+
+}

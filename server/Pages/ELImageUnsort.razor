@@ -1,0 +1,43 @@
+﻿@page "/unsort"
+@layout MainLayout
+@attribute [Authorize]
+@inject ELImageService eLImageService
+
+<h3>EL Image Unsort</h3>
+
+
+<div>
+    <input @bind="@Pallet" @onkeyup="eventKey"/>
+
+    <button @onclick="CallService">Unsort</button>
+</div>
+
+
+@Result
+
+
+@code {
+
+    private void eventKey(KeyboardEventArgs eventArgs)
+    {
+        if (eventArgs.Key == "Enter")        // fire on enter
+        {
+            CallService();
+        }
+    }
+
+
+
+    [Parameter]
+    public string Result { get; set; }
+
+    private void CallService()
+    {
+        Result = eLImageService.UnsortImage(Pallet);
+
+    }
+
+    private string Pallet { get; set; }
+
+
+}

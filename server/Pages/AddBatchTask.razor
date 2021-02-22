@@ -1,0 +1,73 @@
+﻿@page "/add-batch-task"
+@layout MainLayout
+@inherits ManagerImage.Pages.AddBatchTaskComponent
+
+@using Radzen
+@using Radzen.Blazor
+@using ManagerImage.Models.ManagerImage
+<RadzenContent Container="main">
+  <ChildContent>
+    <div class="row">
+      <div class="col-md-12">
+        <RadzenTemplateForm Data="@(batchtask)" Visible="@(batchtask != null)" TItem="ManagerImage.Models.ManagerImage.BatchTask" Submit="@Form0Submit">
+          <ChildContent>
+            <div style="margin-bottom: 1rem" class="row">
+              <div class="col-md-3">
+                <RadzenLabel Text="Description" Component="Description" style="width: 100%">
+                </RadzenLabel>
+              </div>
+              <div class="col-md-9">
+                <RadzenTextBox MaxLength="50" style="display: block; width: 100%" @bind-Value="@((batchtask.Description))" Name="Description">
+                </RadzenTextBox>
+                <RadzenRequiredValidator Component="Description" Text="Description is required" style="position: absolute">
+                </RadzenRequiredValidator>
+              </div>
+            </div>
+            <div style="margin-bottom: 1rem" class="row">
+              <div class="col-md-3">
+                <RadzenLabel Text="Parameters" Component="Parameters" style="width: 100%">
+                </RadzenLabel>
+              </div>
+              <div class="col-md-9">
+                <RadzenTextBox MaxLength="100" style="display: block; width: 100%" @bind-Value="@((batchtask.Parameters))" Name="Parameters">
+                </RadzenTextBox>
+                <RadzenRequiredValidator Component="Parameters" Text="Parameters is required" style="position: absolute">
+                </RadzenRequiredValidator>
+              </div>
+            </div>
+            <div style="margin-bottom: 1rem" class="row">
+              <div class="col-md-3">
+                <RadzenLabel Text="Interval Minutes" Component="IntervalMinutes" style="width: 100%">
+                </RadzenLabel>
+              </div>
+              <div class="col-md-9">
+                <RadzenNumeric style="display: block; width: 100%" @bind-Value="@((batchtask.IntervalMinutes))" Name="IntervalMinutes">
+                </RadzenNumeric>
+                <RadzenRequiredValidator Component="IntervalMinutes" Text="IntervalMinutes is required" style="position: absolute">
+                </RadzenRequiredValidator>
+              </div>
+            </div>
+            <div style="margin-bottom: 1rem" class="row">
+              <div class="col-md-3">
+                <RadzenLabel Text="Is Active" Component="IsActive" style="width: 100%">
+                </RadzenLabel>
+              </div>
+              <div class="col-md-9">
+                <RadzenCheckBox style="display: block" @bind-Value="@((batchtask.IsActive))" Name="IsActive">
+                </RadzenCheckBox>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col offset-sm-3">
+                <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Save" ButtonStyle="ButtonStyle.Primary">
+                </RadzenButton>
+                <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Click="@Button2Click">
+                </RadzenButton>
+              </div>
+            </div>
+          </ChildContent>
+        </RadzenTemplateForm>
+      </div>
+    </div>
+  </ChildContent>
+</RadzenContent>

@@ -1,0 +1,239 @@
+﻿@page "/searchAWS"
+
+
+@layout MainLayout
+
+@inject AWSService aWSService
+@inject HttpClient Http
+
+@inject IJSRuntime JS
+
+<h2>Search AWS</h2>
+
+<div style="padding:30px; width:80%">
+    <div class="row">
+        <h4>Serial</h4>
+    </div>
+    <div class="row">
+        <textarea rows="4" cols="100" @bind="Serial" />
+    </div>
+    <div class="row" style="padding-top:10px">
+        <button @onclick="CallServiceSerial" class="btn btn-outline-primary">Find serial</button>
+    </div>
+</div>
+
+
+    @Result
+    <div class="@Load"></div>
+
+    <div style="padding:20px; width:80%">
+        @if (serviceAWSDto.Count() > 0)
+        {
+        <div >
+            <div class="float-right">@TotalFiles</div>
+            <div >
+                <button @onclick="ExportExcel" class="btn btn-outline-success">Export Excel</button>
+                <button @onclick="ExportFiles" class="btn btn-outline-primary">Export Files</button>
+                <button @onclick="Delete" class="btn btn-outline-danger">Delete</button>
+                <button @onclick="UrlPublic" class="btn btn-outline-secondary">Url public</button>
+            </div>
+
+        </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" @onclick="CheckAllItems" @bind="CheckAll" /></th>
+                        <th>Name</th>
+                        <th>Path</th>
+                        <th>Last modified</th>
+                        <th>Size</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in serviceAWSDto)
+                    {
+                        <tr>
+                            <td>
+                                <input type="checkbox" @bind="item.Active" />
+                            </td>
+                            <td>@item.Name</td>
+                            <td>
+                                <a href="@item.Url" target="_blank">@item.Path</a>
+                            </td>
+                            <td>@item.LastModified</td>
+                            <td>@item.Size</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        }
+
+
+    </div>
+
+    @code {
+
+        private List<ServiceAWSDto> serviceAWSDto = new List<ServiceAWSDto>();
+
+        private string Pallet { get; set; }
+        private string Serial { get; set; }
+        public string TotalFiles { get; set; }
+        public string Result { get; set; }
+        public string Load { get; set; }
+        public bool CheckAll { get; set; }
+
+
+        private async Task Delete()
+        {
+
+            List<ServiceAWSDto> ListNew = new List<ServiceAWSDto>();
+
+            foreach (var item in serviceAWSDto)
+            {
+                if (!item.Active)
+                {
+                    ListNew.Add(item);
+                }
+            }
+
+            serviceAWSDto = ListNew;
+            TotalFiles = "Total: " + serviceAWSDto.Count;
+        }
+
+
+        private async Task CheckAllItems()
+        {
+            foreach (var item in serviceAWSDto)
+            {
+                item.Active = !CheckAll;
+            }
+        }
+
+        private void eventKey(KeyboardEventArgs eventArgs)
+        {
+            if (eventArgs.Key == "Enter")        // fire on enter
+            {
+                CallServiceSerial();
+            }
+        }
+
+
+        private async Task CallServiceSerial()
+        {
+            Result = "Processing please wait....";
+            Load = "loader";
+            try
+            {
+                serviceAWSDto = await Task.Run(() => aWSService.ListingByPallet(Serial, serviceAWSDto, false));
+
+                serviceAWSDto = await Task.Run(() => aWSService.ListingBySerial(Serial, serviceAWSDto));
+
+                if (serviceAWSDto.Count == 0)
+                {
+                    Result = Pallet + " is Wrong pallet";
+                }
+                else
+                {
+                    TotalFiles = "Total: " + serviceAWSDto.Count;
+                }
+
+                Result = "";
+            }
+            catch (Exception e)
+            {
+                Result = e.Message;
+            }
+            Load = "";
+            this.StateHasChanged();
+        }
+
+
+         private async Task CallServiceSerialAll()
+        {
+            Result = "Processing please wait....";
+            Load = "loader";
+            try
+            {
+
+                serviceAWSDto = await Task.Run(() => aWSService.ListingBySerialAll(Serial, serviceAWSDto));
+
+                if (serviceAWSDto.Count == 0)
+                {
+                    Result = Pallet + " is Wrong pallet";
+                }
+                else
+                {
+                    TotalFiles = "Total: " + serviceAWSDto.Count;
+                }
+
+                Result = "";
+            }
+            catch (Exception e)
+            {
+                Result = e.Message;
+            }
+            Load = "";
+            this.StateHasChanged();
+        }
+
+
+        private async Task UrlPublic()
+        {
+            try
+            {
+                Result = "Processing please wait....";
+                Load = "loader";
+                serviceAWSDto = await Task.Run(() => aWSService.UrlPublic(serviceAWSDto));
+                Result = "";
+                Load = "";
+            }
+            catch (Exception e)
+            {
+                Result = e.Message;
+            }
+            Load = "";
+            this.StateHasChanged();
+        }
+
+        public void ExportExcel()
+        {
+            if (serviceAWSDto.Count == 0)
+            {
+                Result = "No Information to export";
+            }
+            else
+            {
+                using (var package = new ExcelPackage())
+                {
+                    var worksheet = package.Workbook.Worksheets.Add("Serials");
+
+                    var tablebody = worksheet.Cells["A1:A1"].LoadFromCollection(
+                        from f in serviceAWSDto
+                        select new { f.Name, f.Path, f.LastModified, f.Size, f.Url }, true);
+
+                    JS.SaveAsNew("ServiceAWS.xlsx", package.GetAsByteArray());
+                }
+            }
+        }
+
+
+        private async Task ExportFiles()
+        {
+            try
+            {
+                Result = "Processing please wait....";
+                Load = "loader";
+
+                await Task.Run(() => aWSService.ExportImages(serviceAWSDto));
+
+                Result = "";
+            }
+            catch (Exception e)
+            {
+                Result = e.Message;
+            }
+            Load = "";
+            this.StateHasChanged();
+        }
+    }

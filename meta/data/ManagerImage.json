@@ -1,0 +1,245 @@
+{
+  "info": {
+    "title": "ManagerImage",
+    "x-type": "odata",
+    "x-connector": "mssql"
+  },
+  "definitions": {
+    "BatchTask": {
+      "x-table": "dbo.BatchTasks",
+      "resource": "BatchTasks",
+      "required": [
+        "Name",
+        "Description",
+        "Parameters",
+        "IntervalMinutes",
+        "IsRunning",
+        "LastEjecution",
+        "IsActive",
+        "CreationDate"
+      ],
+      "properties": {
+        "Id": {
+          "x-key": true,
+          "x-identity": true,
+          "x-nullable": false,
+          "type": "integer"
+        },
+        "Name": {
+          "x-nullable": false,
+          "type": "string",
+          "length": 50
+        },
+        "Description": {
+          "x-nullable": false,
+          "type": "string",
+          "length": 50
+        },
+        "Parameters": {
+          "x-nullable": false,
+          "type": "string",
+          "length": 100
+        },
+        "IntervalMinutes": {
+          "x-nullable": false,
+          "type": "integer"
+        },
+        "IsRunning": {
+          "x-nullable": false,
+          "type": "boolean"
+        },
+        "LastEjecution": {
+          "x-nullable": false,
+          "type": "string",
+          "format": "date-time",
+          "x-datetime": "datetime"
+        },
+        "IsActive": {
+          "x-nullable": false,
+          "type": "boolean"
+        },
+        "CreationDate": {
+          "x-nullable": false,
+          "type": "string",
+          "format": "date-time",
+          "x-datetime": "datetime"
+        }
+      }
+    }
+  },
+  "paths": {
+    "/BatchTasks": {
+      "get": {
+        "operationId": "getBatchTasks",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "$filter",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "$orderby",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "$expand",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "$top",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "$skip",
+            "type": "integer"
+          },
+          {
+            "in": "query",
+            "name": "$format",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "properties": {
+                "value": {
+                  "items": {
+                    "$ref": "#/definitions/BatchTask"
+                  },
+                  "type": "array"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createBatchTask",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "BatchTask",
+            "schema": {
+              "$ref": "#/definitions/BatchTask"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "$ref": "#/definitions/BatchTask"
+            }
+          },
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/BatchTasks({Id})": {
+      "delete": {
+        "operationId": "deleteBatchTask",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Id",
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "204": {},
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "getBatchTaskById",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Id",
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/BatchTask"
+            }
+          },
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateBatchTask",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Id",
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "BatchTask",
+            "schema": {
+              "$ref": "#/definitions/BatchTask"
+            }
+          }
+        ],
+        "responses": {
+          "204": {},
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "cancel": {
+        "operationId": "cancelBatchTaskChanges",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "BatchTask",
+            "schema": {
+              "$ref": "#/definitions/BatchTask"
+            }
+          }
+        ],
+        "responses": {
+          "204": {},
+          "default": {
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": "/odata/ManagerImage",
+  "host": "localhost:5000",
+  "schemes": [
+    "http"
+  ]
+}
